@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import heroMockup from "@/assets/hero-mockup.jpg";
+import vocLogo from "@/assets/voc-logo-white.png";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -83,13 +84,13 @@ function Nav() {
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <a href="#top" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-            <Zap className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <span className="text-sm font-bold tracking-tight">
-            VOC<span className="text-primary">.</span>
-            <span className="font-normal text-muted-foreground">Comunicações</span>
-          </span>
+          <img
+            src={vocLogo}
+            alt="VOC Comunicações"
+            width={120}
+            height={40}
+            className="h-7 w-auto"
+          />
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="#beneficios" className="transition hover:text-foreground">
@@ -653,11 +654,8 @@ function Footer() {
   return (
     <footer className="py-12">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 text-sm text-muted-foreground md:flex-row">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-            <Zap className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <span className="font-bold text-foreground">VOC Comunicações</span>
+        <div className="flex items-center gap-3">
+          <img src={vocLogo} alt="VOC Comunicações" width={120} height={40} className="h-6 w-auto" />
         </div>
         <p>© {new Date().getFullYear()} VOC Comunicações. Estratégia, design e conversão.</p>
       </div>
