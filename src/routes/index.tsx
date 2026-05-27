@@ -487,12 +487,9 @@ function FinalCTA() {
       .join("\n");
 
     try {
-      const leadResult = await saveLead({ nome, whatsapp, empresa, objetivo });
+      await saveLead({ nome, whatsapp, empresa, objetivo });
       setLoading(false);
       formElement.reset();
-      if (leadResult.status === "skipped") {
-        console.warn("Lead storage skipped: configure Supabase environment variables.");
-      }
       toast.success(`Obrigado, ${nome}! Vamos te direcionar para o WhatsApp.`);
       window.open(`https://wa.me/5517991966086?text=${encodeURIComponent(message)}`, "_blank");
     } catch (error) {

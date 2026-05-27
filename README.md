@@ -1,6 +1,16 @@
 # VOC Comunicações Landing Page
 
-Landing page em React, Vite, TanStack Start e Tailwind CSS.
+Projeto enxuto para o Lovable com apenas duas páginas:
+
+- `/` - landing page principal da VOC Comunicações.
+- `/adminleads` - página simples para visualizar os leads enviados pelo formulário.
+
+## Funcionamento atual
+
+O formulário da landing abre o WhatsApp da VOC e salva uma cópia temporária do lead no próprio navegador.
+Por enquanto não há integração com Supabase, API externa ou banco de dados.
+
+Quando o banco for reconfigurado, a camada de leads fica em `src/lib/leads.ts`.
 
 ## Rodar localmente
 
@@ -9,68 +19,10 @@ bun install
 bun run dev
 ```
 
-## Publicar pelo Lovable/GitHub
+## Publicar pelo Lovable
 
-1. Suba este projeto para um repositório no GitHub.
-2. No Lovable, conecte ou importe o projeto pelo GitHub.
-3. Configure as variáveis de ambiente abaixo no Lovable antes de publicar, se quiser salvar leads no Supabase.
-4. Publique pelo Lovable.
+1. Suba este projeto para o GitHub.
+2. No Lovable, conecte ou atualize pelo GitHub.
+3. Publique a página.
 
-## Salvamento de leads
-
-O formulário só tenta salvar leads no Supabase quando as variáveis do frontend estiverem configuradas no Lovable.
-Sem essas variáveis, a landing continua abrindo normalmente e o botão do formulário ainda direciona para o WhatsApp.
-
-Quando for configurar novamente, crie uma tabela chamada `leads` no Supabase com estas colunas:
-
-```sql
-create table public.leads (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz not null default now(),
-  nome text not null,
-  whatsapp text not null,
-  empresa text,
-  objetivo text,
-  source text
-);
-
-alter table public.leads enable row level security;
-
-create policy "Permitir inserir leads pelo site"
-on public.leads
-for insert
-to anon
-with check (true);
-
-drop policy if exists "Permitir listar leads no painel"
-on public.leads;
-```
-
-Importante: não deixe uma policy de `select` para `anon`, porque isso expõe os leads pela chave pública.
-O painel administrativo lê os leads por uma Edge Function protegida.
-
-Variáveis do frontend:
-
-```bash
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
-VITE_SUPABASE_LEADS_TABLE=leads
-VITE_ADMIN_LEADS_FUNCTION_URL=https://seu-projeto.supabase.co/functions/v1/admin-leads
-```
-
-Se essas variáveis não estiverem configuradas, o formulário ainda abre o WhatsApp, mas não salva o lead no banco.
-
-Não coloque URL ou chave do Supabase diretamente nos arquivos do projeto. Use apenas as variáveis de ambiente do Lovable.
-
-## Painel de leads
-
-Acesse `/adminleads` no mesmo domínio da landing para ver os leads em tabela.
-O painel chama a Edge Function `admin-leads`, que deve ter estes secrets no Supabase:
-
-```bash
-ADMIN_LEADS_USER=seu_login
-ADMIN_LEADS_PASSWORD=sua_senha
-LEADS_TABLE=leads
-```
-
-`SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` são fornecidos pelo ambiente das Edge Functions.
+Não há variáveis de ambiente obrigatórias nesta versão.
