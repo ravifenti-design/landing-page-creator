@@ -17,7 +17,6 @@ const AdminleadsRoute = AdminleadsRouteImport.update({
   path: '/adminleads',
   getParentRoute: () => rootRouteImport,
 } as any)
-
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,29 +24,29 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/adminleads': typeof AdminleadsRoute
   '/': typeof IndexRoute
+  '/adminleads': typeof AdminleadsRoute
 }
 export interface FileRoutesByTo {
-  '/adminleads': typeof AdminleadsRoute
   '/': typeof IndexRoute
+  '/adminleads': typeof AdminleadsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/adminleads': typeof AdminleadsRoute
   '/': typeof IndexRoute
+  '/adminleads': typeof AdminleadsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/adminleads' | '/'
+  fullPaths: '/' | '/adminleads'
   fileRoutesByTo: FileRoutesByTo
-  to: '/adminleads' | '/'
-  id: '__root__' | '/adminleads' | '/'
+  to: '/' | '/adminleads'
+  id: '__root__' | '/' | '/adminleads'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AdminleadsRoute: typeof AdminleadsRoute
   IndexRoute: typeof IndexRoute
+  AdminleadsRoute: typeof AdminleadsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -70,8 +69,8 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AdminleadsRoute: AdminleadsRoute,
   IndexRoute: IndexRoute,
+  AdminleadsRoute: AdminleadsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
