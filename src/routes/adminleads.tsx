@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, RefreshCw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type Lead, listLeads } from "@/lib/leads";
+import { type Lead, listAdminLeads } from "@/lib/leads";
 
 export const Route = createFileRoute("/adminleads")({
   component: AdminLeads,
@@ -12,8 +12,6 @@ export const Route = createFileRoute("/adminleads")({
     meta: [{ title: "Admin Leads | VOC Comunicações" }],
   }),
 });
-
-const AUTH_STORAGE_KEY = "voc-adminleads-authenticated";
 
 function normalizePhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
@@ -38,49 +36,35 @@ function AdminLeads() {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  const credentials = useMemo(
-    () => ({
-      username: import.meta.env.VITE_ADMIN_LEADS_USER || "admin",
-      password: import.meta.env.VITE_ADMIN_LEADS_PASSWORD || "admin",
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    setIsAuthenticated(sessionStorage.getItem(AUTH_STORAGE_KEY) === "true");
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      void loadLeads();
-    }
-  }, [isAuthenticated]);
-
   async function loadLeads() {
     setLoading(true);
     setLoadError("");
     try {
-      setLeads(await listLeads());
+      setLeads(await listAdminLeads(username, password));
     } catch (error) {
       console.error(error);
       setLoadError(
-        "Não foi possível carregar os leads. Confira as variáveis do Supabase no Lovable.",
+        "Não foi possível carregar os leads. Confira login, senha e a função admin-leads no Supabase.",
       );
     } finally {
       setLoading(false);
     }
   }
 
-  function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (username === credentials.username && password === credentials.password) {
-      sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
+    setLoginError("");
+    setLoading(true);
+    try {
+      const initialLeads = await listAdminLeads(username, password);
+      setLeads(initialLeads);
       setIsAuthenticated(true);
-      setLoginError("");
-      return;
+    } catch (error) {
+      console.error(error);
+      setLoginError("Login ou senha incorretos, ou função admin-leads não configurada.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoginError("Login ou senha incorretos.");
   }
 
   if (!isAuthenticated) {
@@ -113,8 +97,8 @@ function AdminLeads() {
               />
             </div>
             {loginError && <p className="text-sm text-destructive">{loginError}</p>}
-            <Button type="submit" className="h-11 w-full font-bold">
-              Entrar
+            <Button type="submit" disabled={loading} className="h-11 w-full font-bold">
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </div>
         </form>

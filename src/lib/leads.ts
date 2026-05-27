@@ -21,6 +21,8 @@ type SaveLeadResult =
 
 const DEFAULT_SUPABASE_URL = "https://gpeqtipzeonxemxpnkng.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_miywQg5UH_3TI4pRTOPOQg_0ITutDZQ";
+const DEFAULT_ADMIN_LEADS_FUNCTION_URL =
+  "https://gpeqtipzeonxemxpnkng.supabase.co/functions/v1/admin-leads";
 
 function cleanText(value: string): string {
   return value.trim().slice(0, 1000);
@@ -70,25 +72,25 @@ export async function saveLead(payload: LeadPayload): Promise<SaveLeadResult> {
 }
 
 export async function listLeads(): Promise<Lead[]> {
-  const config = getSupabaseConfig();
+  throw new Error("Use listAdminLeads with admin credentials.");
+}
 
-  if (!config) {
-    throw new Error("Supabase environment variables are not configured.");
-  }
+export async function listAdminLeads(username: string, password: string): Promise<Lead[]> {
+  const functionUrl =
+    import.meta.env.VITE_ADMIN_LEADS_FUNCTION_URL || DEFAULT_ADMIN_LEADS_FUNCTION_URL;
 
-  const response = await fetch(
-    `${config.supabaseUrl}/rest/v1/${config.tableName}?select=*&order=created_at.desc`,
-    {
-      headers: {
-        apikey: config.supabaseAnonKey,
-        authorization: `Bearer ${config.supabaseAnonKey}`,
-      },
+  const response = await fetch(functionUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
     },
-  );
+    body: JSON.stringify({ username, password }),
+  });
 
   if (!response.ok) {
     throw new Error("Could not load leads.");
   }
 
-  return (await response.json()) as Lead[];
+  const payload = (await response.json()) as { leads?: Lead[] };
+  return payload.leads ?? [];
 }

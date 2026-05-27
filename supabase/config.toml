@@ -1,0 +1,2 @@
+[functions.admin-leads]
+verify_jwt = false

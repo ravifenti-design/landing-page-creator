@@ -31,16 +31,29 @@ create table public.leads (
   objetivo text,
   source text
 );
+
+alter table public.leads enable row level security;
+
+create policy "Permitir inserir leads pelo site"
+on public.leads
+for insert
+to anon
+with check (true);
+
+drop policy if exists "Permitir listar leads no painel"
+on public.leads;
 ```
 
-Depois configure as variáveis:
+Importante: não deixe uma policy de `select` para `anon`, porque isso expõe os leads pela chave pública.
+O painel administrativo lê os leads por uma Edge Function protegida.
+
+Variáveis do frontend:
 
 ```bash
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
 VITE_SUPABASE_LEADS_TABLE=leads
-VITE_ADMIN_LEADS_USER=admin
-VITE_ADMIN_LEADS_PASSWORD=troque-essa-senha
+VITE_ADMIN_LEADS_FUNCTION_URL=https://seu-projeto.supabase.co/functions/v1/admin-leads
 ```
 
 Se essas variáveis não estiverem configuradas, o formulário ainda abre o WhatsApp, mas não salva o lead no banco.
@@ -48,7 +61,12 @@ Se essas variáveis não estiverem configuradas, o formulário ainda abre o What
 ## Painel de leads
 
 Acesse `/adminleads` no mesmo domínio da landing para ver os leads em tabela.
-O painel usa `VITE_ADMIN_LEADS_USER` e `VITE_ADMIN_LEADS_PASSWORD` para o login simples.
+O painel chama a Edge Function `admin-leads`, que deve ter estes secrets no Supabase:
 
-Importante: esse login é uma proteção simples no front-end. Para dados sensíveis ou maior segurança,
-use Supabase Auth ou uma área administrativa protegida por autenticação real.
+```bash
+ADMIN_LEADS_USER=seu_login
+ADMIN_LEADS_PASSWORD=sua_senha
+LEADS_TABLE=leads
+```
+
+`SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` são fornecidos pelo ambiente das Edge Functions.
