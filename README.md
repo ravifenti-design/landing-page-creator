@@ -18,8 +18,10 @@ bun run dev
 
 ## Salvamento de leads
 
-O formulário salva leads no Supabase usando a API REST pública com a chave anon.
-Crie uma tabela chamada `leads` no Supabase com estas colunas:
+O formulário só tenta salvar leads no Supabase quando as variáveis do frontend estiverem configuradas no Lovable.
+Sem essas variáveis, a landing continua abrindo normalmente e o botão do formulário ainda direciona para o WhatsApp.
+
+Quando for configurar novamente, crie uma tabela chamada `leads` no Supabase com estas colunas:
 
 ```sql
 create table public.leads (
@@ -57,6 +59,8 @@ VITE_ADMIN_LEADS_FUNCTION_URL=https://seu-projeto.supabase.co/functions/v1/admin
 ```
 
 Se essas variáveis não estiverem configuradas, o formulário ainda abre o WhatsApp, mas não salva o lead no banco.
+
+Não coloque URL ou chave do Supabase diretamente nos arquivos do projeto. Use apenas as variáveis de ambiente do Lovable.
 
 ## Painel de leads
 

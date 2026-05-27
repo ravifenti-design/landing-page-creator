@@ -19,18 +19,13 @@ type SaveLeadResult =
   | { status: "saved" }
   | { status: "skipped"; reason: "missing-config" };
 
-const DEFAULT_SUPABASE_URL = "https://gpeqtipzeonxemxpnkng.supabase.co";
-const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_miywQg5UH_3TI4pRTOPOQg_0ITutDZQ";
-const DEFAULT_ADMIN_LEADS_FUNCTION_URL =
-  "https://gpeqtipzeonxemxpnkng.supabase.co/functions/v1/admin-leads";
-
 function cleanText(value: string): string {
   return value.trim().slice(0, 1000);
 }
 
 function getSupabaseConfig() {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   const tableName = import.meta.env.VITE_SUPABASE_LEADS_TABLE || "leads";
 
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -76,8 +71,11 @@ export async function listLeads(): Promise<Lead[]> {
 }
 
 export async function listAdminLeads(username: string, password: string): Promise<Lead[]> {
-  const functionUrl =
-    import.meta.env.VITE_ADMIN_LEADS_FUNCTION_URL || DEFAULT_ADMIN_LEADS_FUNCTION_URL;
+  const functionUrl = import.meta.env.VITE_ADMIN_LEADS_FUNCTION_URL;
+
+  if (!functionUrl) {
+    throw new Error("Admin leads function URL is missing.");
+  }
 
   const response = await fetch(functionUrl, {
     method: "POST",
